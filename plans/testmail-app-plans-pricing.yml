@@ -1,0 +1,96 @@
+name: Testmail Plans and Pricing
+description: >-
+  Testmail offers four pricing tiers designed for developers, QA teams, and
+  enterprises needing programmable email testing inboxes. Plans vary by monthly
+  email volume, retention period, number of namespaces, API keys, and team
+  seats. All plans include unlimited email addresses and mailboxes via the
+  namespace.tag routing scheme, spam testing via SpamAssassin, and full API
+  access.
+url: https://testmail.app/pricing/
+specificationVersion: '0.1'
+plans:
+  - name: Free
+    description: >-
+      Free forever plan for solo developers exploring email testing. Includes
+      100 emails per month, 1-day retention, one random namespace, one API key,
+      and one user seat. No credit card required.
+    url: https://testmail.app/pricing/
+    price: 0.00
+    currency: USD
+    billingCycle: monthly
+    features:
+      - 100 emails per month
+      - Unlimited email addresses and mailboxes
+      - 1-day email retention
+      - 1 random namespace
+      - 1 API key
+      - 1 user seat
+      - SpamAssassin spam testing
+      - JSON API access
+      - GraphQL API access
+      - Live queries
+    rateLimit:
+      requests: 1000
+      period: hour
+    additionalRateLimits:
+      - requests: 10000
+        period: day
+      - requests: 100000
+        period: month
+  - name: Essential
+    description: >-
+      Entry-level paid plan for individual developers requiring more volume and
+      longer retention. Unlimited emails per month with 3-day retention.
+    url: https://testmail.app/pricing/
+    price: 9.00
+    currency: USD
+    billingCycle: monthly
+    features:
+      - Unlimited emails per month
+      - Unlimited email addresses and mailboxes
+      - 3-day email retention
+      - 1 random namespace
+      - 1 API key
+      - SpamAssassin spam testing
+      - JSON API access
+      - GraphQL API access
+      - Live queries
+      - Pagination and advanced filtering
+  - name: Pro
+    description: >-
+      Professional plan for development teams needing full feature access,
+      30-day retention, unlimited custom namespaces, and unlimited API keys and
+      team members.
+    url: https://testmail.app/pricing/
+    price: 39.00
+    currency: USD
+    billingCycle: monthly
+    features:
+      - Unlimited emails per month
+      - Unlimited email addresses and mailboxes
+      - 30-day email retention
+      - Unlimited custom namespaces
+      - Unlimited API keys
+      - Unlimited user seats / collaborators
+      - SpamAssassin spam testing
+      - JSON API access
+      - GraphQL API access
+      - Live queries
+      - Advanced filtering, sorting, field selection
+      - Wildcard tag search
+      - Attachment handling
+  - name: Enterprise
+    description: >-
+      Enterprise plan for large organizations and agencies managing multiple
+      separate teams, with dedicated support and custom configuration.
+    url: https://testmail.app/pricing/
+    price: 129.00
+    currency: USD
+    billingCycle: monthly
+    features:
+      - All Pro plan features
+      - Multiple separate team management
+      - Dedicated engineering support
+      - Custom namespace configuration
+      - 99.99% uptime SLA
+      - Priority incident response

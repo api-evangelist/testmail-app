@@ -1,0 +1,81 @@
+name: Testmail Rate Limits
+description: >-
+  Testmail enforces API rate limits at both the IP and API key level to ensure
+  platform reliability. Free plan accounts have hard hourly, daily, and monthly
+  request ceilings. Paid accounts have per-key sustained rate limits. Breaching
+  limits results in temporary throttling or blacklisting for up to one hour.
+url: https://testmail.app/docs/
+specificationVersion: '0.1'
+rateLimits:
+  - name: Free Plan Hourly Limit
+    description: >-
+      Free plan API keys are limited to 1,000 requests per hour across both
+      JSON and GraphQL endpoints. Exceeding this limit results in throttling
+      and temporary blacklisting of up to 1 hour.
+    scope: api-key
+    plan: Free
+    limit: 1000
+    period: hour
+    enforcement: throttle-then-blacklist
+    blacklistDuration: up to 1 hour
+  - name: Free Plan Daily Limit
+    description: >-
+      Free plan API keys are limited to 10,000 requests per day.
+    scope: api-key
+    plan: Free
+    limit: 10000
+    period: day
+    enforcement: throttle-then-blacklist
+  - name: Free Plan Monthly Limit
+    description: >-
+      Free plan API keys are limited to 100,000 requests per month.
+    scope: api-key
+    plan: Free
+    limit: 100000
+    period: month
+    enforcement: throttle-then-blacklist
+  - name: Paid Plan Per-Key Sustained Limit
+    description: >-
+      Paid plan API keys that sustain more than 5 requests per second for an
+      hour or more will be throttled. This limit applies per individual API
+      key.
+    scope: api-key
+    plan: Essential, Pro, Enterprise
+    limit: 5
+    period: second
+    sustained: true
+    sustainedWindow: 1 hour
+    enforcement: throttle
+  - name: Global IP Limit
+    description: >-
+      All plans are subject to a global IP-based throttle. More than 10
+      requests per second from the same IP address sustained over many minutes
+      will trigger throttling across all requests from that IP regardless of
+      plan.
+    scope: ip-address
+    plan: All
+    limit: 10
+    period: second
+    enforcement: throttle
+  - name: Pagination Limit
+    description: >-
+      The maximum number of emails returned per API request (page size) is
+      100. The maximum offset for pagination is 9,899, limiting deep pagination.
+    scope: request
+    plan: All
+    maxLimit: 100
+    maxOffset: 9899
+    enforcement: hard-cap
+  - name: Live Query Timeout
+    description: >-
+      Live queries (long-poll) use HTTP 307 redirects and must be reissued
+      every 60 seconds while waiting for new emails.
+    scope: connection
+    plan: All
+    liveQueryRefresh: 60 seconds
+    enforcement: redirect
+notes:
+  - Temporary blacklisting lasts up to 1 hour when rate limits are breached.
+  - Contact support@testmail.app for limit increase requests on Enterprise plans.
+  - Pagination max offset of 9,899 with page size of 100 allows access to up
+    to 9,999 emails per namespace per query.

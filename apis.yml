@@ -1,0 +1,84 @@
+aid: testmail-app
+name: Testmail
+description: >-
+  Testmail is an email testing API platform for developers and QA teams that
+  provides programmable inboxes with unlimited email addresses via a
+  namespace.tag routing scheme. It offers both a JSON REST API and a GraphQL
+  API for instant, programmatic retrieval of test emails, supporting automated
+  end-to-end email testing in development workflows and CI/CD pipelines. Key
+  capabilities include wildcard tag searches, live queries, pagination, spam
+  score testing via SpamAssassin, and attachment handling.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+url: >-
+  https://raw.githubusercontent.com/api-evangelist/testmail-app/refs/heads/main/apis.yml
+created: '2026-06-13'
+modified: '2026-06-13'
+specificationVersion: '0.19'
+tags:
+  - Email Testing
+  - Developer Tools
+  - API Testing
+  - GraphQL
+  - REST API
+  - CI/CD
+  - QA Automation
+  - Programmable Inboxes
+apis:
+  - aid: testmail-app:testmail-json-api
+    name: Testmail JSON API
+    description: >-
+      RESTful JSON API for retrieving test emails from Testmail programmable
+      inboxes. Supports filtering by namespace and tag, pagination, live
+      polling queries, and spam score reports. Authentication via API key as
+      query parameter.
+    humanURL: https://testmail.app/docs/
+    baseURL: https://api.testmail.app/api/json
+    tags:
+      - Email Testing
+      - REST API
+      - JSON
+    properties:
+      - type: Documentation
+        url: https://testmail.app/docs/
+  - aid: testmail-app:testmail-graphql-api
+    name: Testmail GraphQL API
+    description: >-
+      Full-featured GraphQL API for querying test emails from Testmail
+      programmable inboxes. Supports advanced filtering, custom sorting, field
+      selection, live queries, pagination, and spam reports. Bearer token
+      authentication via Authorization header.
+    humanURL: https://testmail.app/docs/
+    baseURL: https://api.testmail.app/api/graphql
+    tags:
+      - Email Testing
+      - GraphQL
+    properties:
+      - type: Documentation
+        url: https://testmail.app/docs/
+      - type: GraphQLEndpoint
+        url: https://api.testmail.app/api/graphql
+common:
+  - type: Website
+    url: https://testmail.app
+  - type: Documentation
+    url: https://testmail.app/docs/
+  - type: GitHubOrg
+    url: https://github.com/testmail-app
+  - type: X
+    url: https://x.com/testmailapp
+  - type: Blog
+    url: https://testmail.app/blog/
+  - type: Pricing
+    url: https://testmail.app/pricing/
+  - type: StatusPage
+    url: https://status.testmail.app
+  - type: Plans
+    url: plans/testmail-app-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/testmail-app-rate-limits.yml
+  - type: FinOps
+    url: finops/testmail-app-finops.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

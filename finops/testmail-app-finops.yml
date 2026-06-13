@@ -1,0 +1,98 @@
+name: Testmail FinOps Framework
+description: >-
+  FinOps framework analysis for Testmail API consumption. Testmail's
+  subscription pricing model with a free tier and fixed monthly plans makes
+  cost predictability straightforward for development and testing budgets.
+  Primary cost drivers are plan tier selection based on email volume needs and
+  retention requirements. All paid plans include unlimited emails, so overage
+  costs are not a concern once on a paid plan.
+url: https://testmail.app/pricing/
+specificationVersion: '1.0'
+domains:
+  - name: Understand
+    description: Visibility into Testmail API usage and cost allocation
+    capabilities:
+      - name: Cost Allocation
+        description: >-
+          Testmail costs are fixed monthly subscription fees with no per-email
+          or per-request variable charges on paid plans. Costs can be allocated
+          to engineering or QA cost centers directly from subscription billing.
+        type: fixed-subscription
+        plans:
+          - name: Free
+            monthlyCost: 0.00
+          - name: Essential
+            monthlyCost: 9.00
+          - name: Pro
+            monthlyCost: 39.00
+          - name: Enterprise
+            monthlyCost: 129.00
+      - name: Usage Tracking
+        description: >-
+          Email volume is tracked via the developer console. API key usage can
+          be monitored per key on Pro and Enterprise plans with unlimited keys.
+          Free plan users should monitor against the 100 emails/month ceiling
+          to plan upgrade timing.
+        metrics:
+          - emails received per month
+          - API requests per hour/day/month (Free plan)
+          - namespace utilization
+  - name: Optimize
+    description: Strategies to right-size Testmail plan usage
+    capabilities:
+      - name: Right-Sizing
+        description: >-
+          Teams should assess actual email volume and retention needs before
+          selecting a plan. The Free plan is adequate for light exploratory
+          testing (up to 100 emails/month). The Essential plan ($9/mo) covers
+          teams needing unlimited volume but only 1 namespace and short
+          retention. The Pro plan ($39/mo) is recommended for CI/CD pipelines
+          requiring parallel namespace isolation and 30-day log retention for
+          audit purposes.
+        recommendations:
+          - Solo developers with occasional testing: Free plan
+          - Small teams or single-project CI pipelines: Essential ($9/mo)
+          - Multi-project teams needing namespace isolation: Pro ($39/mo)
+          - Agencies or enterprises with multiple team units: Enterprise ($129/mo)
+      - name: Rate Limit Optimization
+        description: >-
+          Free plan consumers should batch API polling and use live queries
+          instead of tight polling loops to stay within the 1,000 requests/hour
+          limit. Paid plan users should ensure no single API key exceeds 5
+          requests/second sustained to avoid throttling.
+        practices:
+          - Use live queries (long-poll) instead of polling loops to reduce request count
+          - Use GraphQL field selection to minimize response payload size
+          - Distribute load across multiple API keys (Pro/Enterprise) if needed
+          - Cache email retrieval results to avoid redundant API calls
+  - name: Operate
+    description: Operational governance for Testmail usage within organizations
+    capabilities:
+      - name: Budgeting
+        description: >-
+          Testmail's fixed subscription model enables straightforward annual
+          budgeting. No surprise overages on paid plans. Organizations should
+          budget for the appropriate tier plus any annual commitment discounts
+          if available directly from Testmail.
+        budgetModel: fixed-subscription
+        variableCostRisk: low
+      - name: Chargeback and Showback
+        description: >-
+          On Pro and Enterprise plans, separate namespaces can be used per team
+          or project for logical isolation. While Testmail does not provide
+          per-namespace billing breakdowns, internal chargeback can be
+          implemented by tagging test emails with team identifiers in the tag
+          portion of the namespace.tag routing scheme.
+        chargebackMethod: manual-namespace-tagging
+      - name: Vendor Management
+        description: >-
+          Testmail is a small, independent SaaS vendor. Organizations should
+          note the lack of a formal SLA on Free and Essential plans. The
+          Enterprise plan includes 99.99% uptime SLA. Vendor health can be
+          monitored at status.testmail.app. For issues, contact
+          support@testmail.app.
+        statusPage: https://status.testmail.app
+        supportContact: support@testmail.app
+        slaPlans:
+          - plan: Enterprise
+            uptime: 99.99%
