@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.testmail.app/schemas/email",
+  "title": "Email",
+  "description": "A single test email retrieved from a Testmail programmable inbox.",
+  "type": "object",
+  "properties": {
+    "from": {
+      "type": "string",
+      "format": "email",
+      "description": "Sender email address.",
+      "examples": ["sender@example.com"]
+    },
+    "to": {
+      "type": "string",
+      "format": "email",
+      "description": "Recipient email address in the testmail namespace (namespace.tag@inbox.testmail.app).",
+      "examples": ["mynamespace.mytag@inbox.testmail.app"]
+    },
+    "subject": {
+      "type": "string",
+      "description": "Email subject line.",
+      "examples": ["Please verify your email address"]
+    },
+    "text": {
+      "type": "string",
+      "description": "Plain-text body of the email."
+    },
+    "html": {
+      "type": "string",
+      "description": "HTML body of the email."
+    },
+    "tag": {
+      "type": "string",
+      "description": "Tag portion of the recipient address used to route the email to this inbox.",
+      "examples": ["verify-user123"]
+    },
+    "timestamp": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Unix timestamp in milliseconds when the email was received by Testmail.",
+      "examples": [1686000000000]
+    },
+    "headers": {
+      "type": "array",
+      "description": "Raw email headers. Only present when requested via headers=true (JSON API) or selected in GraphQL.",
+      "items": {
+        "$ref": "#/$defs/EmailHeader"
+      }
+    },
+    "from_parsed": {
+      "$ref": "#/$defs/ParsedAddress",
+      "description": "Parsed sender address components. Available in GraphQL API only."
+    },
+    "spam_score": {
+      "type": "number",
+      "description": "SpamAssassin spam score. Scores above 5 are typically flagged as spam. Only present when spam_report=true.",
+      "examples": [1.2]
+    },
+    "spam_report": {
+      "type": "string",
+      "description": "Detailed SpamAssassin spam analysis report. Only present when spam_report=true (JSON API)."
+    }
+  },
+  "required": ["from", "to", "subject", "tag", "timestamp"],
+  "$defs": {
+    "EmailHeader": {
+      "type": "object",
+      "title": "EmailHeader",
+      "description": "A single raw email header line.",
+      "properties": {
+        "line": {
+          "type": "string",
+          "description": "Full raw header line including name and value.",
+          "examples": ["Content-Type: text/html; charset=utf-8"]
+        },
+        "key": {
+          "type": "string",
+          "description": "Header name/key in lowercase.",
+          "examples": ["content-type"]
+        }
+      },
+      "required": ["line", "key"]
+    },
+    "ParsedAddress": {
+      "type": "object",
+      "title": "ParsedAddress",
+      "description": "Parsed email address with display name and raw address separated.",
+      "properties": {
+        "address": {
+          "type": "string",
+          "format": "email",
+          "description": "The raw email address.",
+          "examples": ["sender@example.com"]
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name associated with the address.",
+          "examples": ["John Sender"]
+        }
+      },
+      "required": ["address"]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.testmail.app/schemas/filter-input",
+  "title": "FilterInput",
+  "description": "Advanced filter input for GraphQL inbox queries. Allows filtering on email fields beyond namespace and tag, with wildcard and regex support.",
+  "type": "object",
+  "required": ["field", "match", "action", "value"],
+  "properties": {
+    "field": {
+      "type": "string",
+      "enum": ["from", "to", "subject", "text", "html"],
+      "description": "Email field to apply the filter to.",
+      "examples": ["subject"]
+    },
+    "match": {
+      "type": "string",
+      "enum": ["exact", "wildcard", "regex"],
+      "description": "Matching strategy. 'exact' requires full string match; 'wildcard' supports * and ? patterns; 'regex' accepts regular expressions.",
+      "examples": ["wildcard"]
+    },
+    "action": {
+      "type": "string",
+      "enum": ["include", "exclude"],
+      "description": "Whether to include or exclude emails matching this filter.",
+      "examples": ["include"]
+    },
+    "value": {
+      "type": "string",
+      "description": "Value to match against the specified field. Body fields (text/html) are limited to 30KB.",
+      "examples": ["Welcome*"]
+    }
+  }
+}

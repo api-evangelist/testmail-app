@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.testmail.app/schemas/inbox-response",
+  "title": "InboxResponse",
+  "description": "Response envelope for the Testmail JSON API inbox query.",
+  "type": "object",
+  "required": ["result", "count", "limit", "offset", "emails"],
+  "properties": {
+    "result": {
+      "type": "string",
+      "enum": ["success", "fail"],
+      "description": "Indicates whether the API call succeeded.",
+      "examples": ["success"]
+    },
+    "message": {
+      "type": ["string", "null"],
+      "description": "Human-readable message. Null on success; populated with error detail on failure.",
+      "examples": [null, "Missing required parameter: namespace"]
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of emails matching the query before pagination is applied.",
+      "examples": [3]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100,
+      "description": "Maximum number of emails returned per request as specified in the request.",
+      "examples": [10]
+    },
+    "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of emails skipped for pagination as specified in the request.",
+      "examples": [0]
+    },
+    "emails": {
+      "type": "array",
+      "description": "Array of email objects matching the query.",
+      "items": {
+        "$ref": "email.json"
+      }
+    }
+  }
+}

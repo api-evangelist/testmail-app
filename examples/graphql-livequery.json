@@ -1,0 +1,39 @@
+{
+  "title": "GraphQL API - Live query waiting for new email",
+  "description": "Example of a live GraphQL query that waits for a new email matching specific criteria before returning. The server holds the connection until an email arrives or 60 seconds elapses (then returns HTTP 307).",
+  "request": {
+    "method": "POST",
+    "url": "https://api.testmail.app/api/graphql",
+    "headers": {
+      "Authorization": "Bearer YOUR_API_KEY",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "query": "query { inbox(namespace: \"mynamespace\", tag: \"signup-testuser999\", livequery: true) { result count emails { from subject text timestamp } } }"
+    }
+  },
+  "livequery_behavior": {
+    "description": "The server holds the request open until a matching email arrives or 60 seconds pass.",
+    "on_email_received": "Returns 200 with the matching email immediately.",
+    "on_timeout": "Returns HTTP 307 redirect to the same URL. The client must follow redirects and resend the request."
+  },
+  "response_on_match": {
+    "status": 200,
+    "body": {
+      "data": {
+        "inbox": {
+          "result": "success",
+          "count": 1,
+          "emails": [
+            {
+              "from": "no-reply@myapp.com",
+              "subject": "Welcome! Please complete your signup.",
+              "text": "Thank you for signing up. Please confirm your account.",
+              "timestamp": 1686010000000.0
+            }
+          ]
+        }
+      }
+    }
+  }
+}

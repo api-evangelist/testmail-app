@@ -1,0 +1,182 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "testmail": "https://testmail.app/vocab#",
+
+    "name": "schema:name",
+    "description": "schema:description",
+    "url": "schema:url",
+
+    "Email": "schema:EmailMessage",
+    "from": {
+      "@id": "schema:sender",
+      "@type": "schema:ContactPoint"
+    },
+    "to": {
+      "@id": "schema:recipient",
+      "@type": "schema:ContactPoint"
+    },
+    "subject": "schema:headline",
+    "text": "schema:text",
+    "html": {
+      "@id": "schema:encodingFormat",
+      "@type": "xsd:string"
+    },
+    "timestamp": {
+      "@id": "schema:dateReceived",
+      "@type": "xsd:long"
+    },
+
+    "namespace": {
+      "@id": "testmail:namespace",
+      "@type": "xsd:string",
+      "description": "Unique Testmail account namespace used for routing emails to programmable inboxes."
+    },
+    "tag": {
+      "@id": "testmail:tag",
+      "@type": "xsd:string",
+      "description": "Tag portion of the inbox address (namespace.tag@inbox.testmail.app). Identifies the specific programmable inbox."
+    },
+    "livequery": {
+      "@id": "testmail:livequery",
+      "@type": "xsd:boolean",
+      "description": "When true, holds the request open until a matching email arrives or 60 seconds elapses."
+    },
+    "tag_prefix": {
+      "@id": "testmail:tagPrefix",
+      "@type": "xsd:string",
+      "description": "Filters emails whose tag begins with the specified prefix."
+    },
+    "spam_score": {
+      "@id": "testmail:spamScore",
+      "@type": "xsd:float",
+      "description": "SpamAssassin spam score. Scores above 5.0 are typically flagged as spam."
+    },
+    "spam_report": {
+      "@id": "testmail:spamReport",
+      "@type": "xsd:string",
+      "description": "Detailed SpamAssassin analysis report text."
+    },
+
+    "InboxResponse": {
+      "@id": "testmail:InboxResponse",
+      "@type": "@id"
+    },
+    "result": {
+      "@id": "testmail:result",
+      "@type": "xsd:string"
+    },
+    "count": {
+      "@id": "testmail:count",
+      "@type": "xsd:integer"
+    },
+    "limit": {
+      "@id": "testmail:limit",
+      "@type": "xsd:integer"
+    },
+    "offset": {
+      "@id": "testmail:offset",
+      "@type": "xsd:integer"
+    },
+    "emails": {
+      "@id": "testmail:emails",
+      "@container": "@list"
+    },
+
+    "EmailHeader": {
+      "@id": "testmail:EmailHeader",
+      "@type": "@id"
+    },
+    "line": {
+      "@id": "testmail:headerLine",
+      "@type": "xsd:string"
+    },
+    "key": {
+      "@id": "testmail:headerKey",
+      "@type": "xsd:string"
+    },
+
+    "ParsedAddress": {
+      "@id": "testmail:ParsedAddress",
+      "@type": "@id"
+    },
+    "from_parsed": {
+      "@id": "testmail:fromParsed",
+      "@type": "@id"
+    },
+    "address": {
+      "@id": "schema:email",
+      "@type": "xsd:string"
+    },
+
+    "FilterInput": {
+      "@id": "testmail:FilterInput",
+      "@type": "@id"
+    },
+    "field": {
+      "@id": "testmail:filterField",
+      "@type": "xsd:string"
+    },
+    "match": {
+      "@id": "testmail:filterMatch",
+      "@type": "xsd:string"
+    },
+    "action": {
+      "@id": "testmail:filterAction",
+      "@type": "xsd:string"
+    },
+    "value": {
+      "@id": "testmail:filterValue",
+      "@type": "xsd:string"
+    },
+
+    "SortInput": {
+      "@id": "testmail:SortInput",
+      "@type": "@id"
+    },
+    "order": {
+      "@id": "testmail:sortOrder",
+      "@type": "xsd:string"
+    },
+
+    "GraphQLRequest": {
+      "@id": "testmail:GraphQLRequest",
+      "@type": "@id"
+    },
+    "query": {
+      "@id": "testmail:graphqlQuery",
+      "@type": "xsd:string"
+    },
+    "variables": {
+      "@id": "testmail:graphqlVariables",
+      "@type": "@json"
+    },
+    "operationName": {
+      "@id": "testmail:graphqlOperationName",
+      "@type": "xsd:string"
+    },
+
+    "timestamp_from": {
+      "@id": "testmail:timestampFrom",
+      "@type": "xsd:long"
+    },
+    "timestamp_to": {
+      "@id": "testmail:timestampTo",
+      "@type": "xsd:long"
+    },
+    "apikey": {
+      "@id": "testmail:apiKey",
+      "@type": "xsd:string"
+    },
+    "headers": {
+      "@id": "testmail:emailHeaders",
+      "@container": "@list"
+    },
+    "message": {
+      "@id": "testmail:responseMessage",
+      "@type": "xsd:string"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "title": "JSON API - Retrieve emails with spam report",
+  "description": "Example GET request with spam_report=true to include SpamAssassin analysis in the response.",
+  "request": {
+    "method": "GET",
+    "url": "https://api.testmail.app/api/json?apikey=YOUR_API_KEY&namespace=mynamespace&spam_report=true&limit=1"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "result": "success",
+      "message": null,
+      "count": 1,
+      "limit": 1,
+      "offset": 0,
+      "emails": [
+        {
+          "from": "bulk@newsletter.com",
+          "to": "mynamespace.newsletter-test@inbox.testmail.app",
+          "subject": "Your weekly newsletter",
+          "text": "Check out our latest deals!",
+          "html": "<p>Check out our <a href=\"https://newsletter.com/deals\">latest deals</a>!</p>",
+          "tag": "newsletter-test",
+          "timestamp": 1686002000000,
+          "spam_score": 2.4,
+          "spam_report": "SpamAssassin Score: 2.4\n---\nTests:\n  HTML_MESSAGE: 0.001 (HTML email)\n  MIME_HTML_ONLY: 0.1 (only HTML content)\n  FROM_EXCESS_BASE64: 0.8 (suspicious encoding)\n  BULK_EMAIL_PATTERN: 1.5 (bulk sender indicators)\n---\nThreshold: 5.0 (not spam)"
+        }
+      ]
+    }
+  }
+}

@@ -41,6 +41,8 @@ apis:
     properties:
       - type: Documentation
         url: https://testmail.app/docs/
+      - type: OpenAPI
+        url: openapi/testmail-app-json-api-openapi.yml
   - aid: testmail-app:testmail-graphql-api
     name: Testmail GraphQL API
     description: >-
@@ -58,6 +60,8 @@ apis:
         url: https://testmail.app/docs/
       - type: GraphQLEndpoint
         url: https://api.testmail.app/api/graphql
+      - type: OpenAPI
+        url: openapi/testmail-app-graphql-api-openapi.yml
 common:
   - type: Website
     url: https://testmail.app

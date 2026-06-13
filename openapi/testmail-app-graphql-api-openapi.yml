@@ -1,0 +1,420 @@
+openapi: 3.0.3
+info:
+  title: Testmail GraphQL API
+  description: >-
+    Full-featured GraphQL API for querying test emails from Testmail
+    programmable inboxes. Supports advanced filtering, custom sorting, field
+    selection, live queries, pagination, and spam reports. Authenticated via
+    Bearer token in the Authorization header. The GraphQL endpoint accepts
+    POST requests with a JSON body containing the query and optional variables.
+  version: 1.0.0
+  contact:
+    url: https://testmail.app/docs/
+  license:
+    name: Proprietary
+    url: https://testmail.app
+servers:
+  - url: https://api.testmail.app/api
+    description: Testmail Production API
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: GraphQL
+    description: GraphQL inbox query endpoint
+
+paths:
+  /graphql:
+    post:
+      operationId: graphqlQuery
+      summary: Execute a GraphQL query against the Testmail inbox
+      description: >-
+        Executes a GraphQL query or mutation against the Testmail API. The
+        primary query is `inbox`, which retrieves test emails matching the
+        specified namespace and optional filters. Supports advanced filtering
+        via FilterInput, custom sorting via SortInput, pagination, live queries,
+        and selective field retrieval. When livequery is active the server waits
+        up to 60 seconds for matching emails; if none arrive it returns HTTP 307
+        and the client must follow the redirect and resend.
+      tags:
+        - GraphQL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphQLRequest'
+            examples:
+              basicInbox:
+                $ref: '#/components/examples/BasicInboxQuery'
+              tagFilter:
+                $ref: '#/components/examples/TagFilterQuery'
+              advancedFilter:
+                $ref: '#/components/examples/AdvancedFilterQuery'
+              livequery:
+                $ref: '#/components/examples/LiveQuery'
+      responses:
+        '200':
+          description: Successful GraphQL response containing the inbox query result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+              examples:
+                success:
+                  $ref: '#/components/examples/InboxQueryResponse'
+        '307':
+          description: >-
+            Temporary redirect issued by livequery when no matching emails
+            arrive within 60 seconds. Client must follow the redirect and resend
+            the POST request with the same body.
+          headers:
+            Location:
+              description: URL to resend the request to (same endpoint).
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: Bad request — malformed GraphQL query or missing required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLErrorResponse'
+        '401':
+          description: Unauthorized — missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLErrorResponse'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        API key as Bearer token. Obtain from the Testmail developer console and
+        pass as: Authorization: Bearer YOUR_API_KEY
+
+  schemas:
+    GraphQLRequest:
+      type: object
+      required:
+        - query
+      description: GraphQL request body.
+      properties:
+        query:
+          type: string
+          description: GraphQL query string.
+          example: "query { inbox(namespace: \"mynamespace\") { result count emails { from subject } } }"
+        variables:
+          type: object
+          additionalProperties: true
+          description: Optional variables map to inject into the query.
+          example:
+            namespace: mynamespace
+            tag: verify-user123
+        operationName:
+          type: string
+          description: Optional name of the operation to execute when multiple operations are present.
+          example: GetInbox
+
+    GraphQLResponse:
+      type: object
+      description: GraphQL response envelope.
+      properties:
+        data:
+          type: object
+          description: Query result data keyed by operation name.
+          properties:
+            inbox:
+              $ref: '#/components/schemas/InboxResult'
+        errors:
+          type: array
+          description: List of GraphQL errors, if any.
+          items:
+            $ref: '#/components/schemas/GraphQLError'
+
+    GraphQLErrorResponse:
+      type: object
+      description: GraphQL error response when no data is returned.
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/GraphQLError'
+
+    GraphQLError:
+      type: object
+      description: A single GraphQL error.
+      properties:
+        message:
+          type: string
+          description: Human-readable error message.
+          example: "Argument 'namespace' is required"
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: integer
+              column:
+                type: integer
+        path:
+          type: array
+          items:
+            type: string
+
+    InboxResult:
+      type: object
+      description: Result of the inbox GraphQL query.
+      properties:
+        result:
+          type: string
+          enum:
+            - success
+            - fail
+          description: Whether the query succeeded.
+          example: success
+        message:
+          type: string
+          nullable: true
+          description: Human-readable message, populated on failure.
+        count:
+          type: integer
+          description: Total number of emails matching the query (before pagination).
+          example: 5
+        emails:
+          type: array
+          description: Array of email objects matching the query.
+          items:
+            $ref: '#/components/schemas/GraphQLEmail'
+
+    GraphQLEmail:
+      type: object
+      description: >-
+        A single test email returned by the GraphQL inbox query. Fields are
+        only returned if requested in the GraphQL selection set.
+      properties:
+        from:
+          type: string
+          description: Sender email address.
+          example: sender@example.com
+        from_parsed:
+          $ref: '#/components/schemas/ParsedAddress'
+        to:
+          type: string
+          description: Recipient email address in the testmail namespace.
+          example: mynamespace.mytag@inbox.testmail.app
+        subject:
+          type: string
+          description: Email subject line.
+          example: Welcome to Our Service
+        text:
+          type: string
+          description: Plain-text body of the email.
+        html:
+          type: string
+          description: HTML body of the email.
+        tag:
+          type: string
+          description: Tag portion of the recipient address.
+          example: mytag
+        timestamp:
+          type: number
+          format: float
+          description: Unix timestamp in milliseconds when the email was received.
+          example: 1686000000000.0
+        spam_score:
+          type: number
+          format: float
+          description: SpamAssassin spam score. Scores above 5 are typically flagged as spam.
+          example: 1.2
+
+    ParsedAddress:
+      type: object
+      description: Parsed email address components.
+      properties:
+        address:
+          type: string
+          description: The raw email address.
+          example: sender@example.com
+        name:
+          type: string
+          description: Display name associated with the address.
+          example: John Sender
+
+    FilterInput:
+      type: object
+      description: >-
+        Advanced filter input for GraphQL inbox queries. Allows filtering on
+        additional email fields beyond namespace and tag.
+      required:
+        - field
+        - match
+        - action
+        - value
+      properties:
+        field:
+          type: string
+          description: Email field to filter on.
+          enum:
+            - from
+            - to
+            - subject
+            - text
+            - html
+          example: subject
+        match:
+          type: string
+          description: Match type for the filter value.
+          enum:
+            - exact
+            - wildcard
+            - regex
+          example: wildcard
+        action:
+          type: string
+          description: Whether to include or exclude emails matching this filter.
+          enum:
+            - include
+            - exclude
+          example: include
+        value:
+          type: string
+          description: Value to match against the specified field.
+          example: "Welcome*"
+
+    SortInput:
+      type: object
+      description: Sort input for GraphQL inbox queries.
+      required:
+        - field
+        - order
+      properties:
+        field:
+          type: string
+          description: Email field to sort by.
+          enum:
+            - tag
+            - timestamp
+            - subject
+            - from
+          example: timestamp
+        order:
+          type: string
+          description: Sort direction.
+          enum:
+            - asc
+            - desc
+          example: desc
+
+  examples:
+    BasicInboxQuery:
+      summary: Retrieve all emails in a namespace
+      value:
+        query: |
+          query {
+            inbox(namespace: "mynamespace") {
+              result
+              count
+              emails {
+                from
+                to
+                subject
+                text
+                tag
+                timestamp
+              }
+            }
+          }
+
+    TagFilterQuery:
+      summary: Filter emails by exact tag
+      value:
+        query: |
+          query GetTaggedEmails($ns: String!, $tag: String) {
+            inbox(namespace: $ns, tag: $tag, limit: 5) {
+              result
+              count
+              emails {
+                from
+                subject
+                tag
+                timestamp
+              }
+            }
+          }
+        variables:
+          ns: mynamespace
+          tag: verify-user123
+
+    AdvancedFilterQuery:
+      summary: Advanced filter by subject wildcard
+      value:
+        query: |
+          query {
+            inbox(
+              namespace: "mynamespace"
+              advanced_filters: [{ field: "subject", match: "wildcard", action: "include", value: "Welcome*" }]
+              advanced_sorts: [{ field: "timestamp", order: "desc" }]
+              limit: 20
+            ) {
+              result
+              count
+              emails {
+                from
+                subject
+                tag
+                timestamp
+                spam_score
+              }
+            }
+          }
+
+    LiveQuery:
+      summary: Live query waiting for a new email
+      value:
+        query: |
+          query {
+            inbox(namespace: "mynamespace", tag: "signup-newuser", livequery: true) {
+              result
+              count
+              emails {
+                from
+                subject
+                text
+                timestamp
+              }
+            }
+          }
+
+    InboxQueryResponse:
+      summary: Successful inbox query response
+      value:
+        data:
+          inbox:
+            result: success
+            message: null
+            count: 2
+            emails:
+              - from: no-reply@myapp.com
+                to: mynamespace.verify-abc@inbox.testmail.app
+                subject: Verify your email
+                text: Click here to verify.
+                tag: verify-abc
+                timestamp: 1686000000000.0
+              - from: no-reply@myapp.com
+                to: mynamespace.verify-def@inbox.testmail.app
+                subject: Verify your email
+                text: Click here to verify.
+                tag: verify-def
+                timestamp: 1686001000000.0

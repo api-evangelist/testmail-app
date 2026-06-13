@@ -1,0 +1,41 @@
+{
+  "title": "JSON API - Retrieve emails from a namespace inbox",
+  "description": "Example GET request and response for retrieving test emails from the Testmail JSON API.",
+  "request": {
+    "method": "GET",
+    "url": "https://api.testmail.app/api/json?apikey=YOUR_API_KEY&namespace=mynamespace&tag=verify-user123&limit=5"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "result": "success",
+      "message": null,
+      "count": 2,
+      "limit": 5,
+      "offset": 0,
+      "emails": [
+        {
+          "from": "no-reply@myapp.com",
+          "to": "mynamespace.verify-user123@inbox.testmail.app",
+          "subject": "Verify your email address",
+          "text": "Please click the link to verify your email: https://myapp.com/verify/token123",
+          "html": "<p>Please <a href=\"https://myapp.com/verify/token123\">click here</a> to verify your email address.</p>",
+          "tag": "verify-user123",
+          "timestamp": 1686000000000
+        },
+        {
+          "from": "no-reply@myapp.com",
+          "to": "mynamespace.verify-user123@inbox.testmail.app",
+          "subject": "Resend: Verify your email address",
+          "text": "We resent your verification email. Click here: https://myapp.com/verify/token456",
+          "html": "<p>We resent your verification email. <a href=\"https://myapp.com/verify/token456\">Click here</a>.</p>",
+          "tag": "verify-user123",
+          "timestamp": 1686001000000
+        }
+      ]
+    }
+  }
+}

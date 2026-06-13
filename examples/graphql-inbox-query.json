@@ -1,0 +1,73 @@
+{
+  "title": "GraphQL API - Inbox query with advanced filters",
+  "description": "Example GraphQL POST request and response using advanced filters and sorting to retrieve test emails.",
+  "request": {
+    "method": "POST",
+    "url": "https://api.testmail.app/api/graphql",
+    "headers": {
+      "Authorization": "Bearer YOUR_API_KEY",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "query": "query GetInbox($ns: String!) { inbox(namespace: $ns, advanced_filters: [{ field: \"subject\", match: \"wildcard\", action: \"include\", value: \"Verify*\" }], advanced_sorts: [{ field: \"timestamp\", order: \"desc\" }], limit: 10) { result count emails { from from_parsed { address name } to subject text tag timestamp spam_score } } }",
+      "variables": {
+        "ns": "mynamespace"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "data": {
+        "inbox": {
+          "result": "success",
+          "count": 3,
+          "emails": [
+            {
+              "from": "no-reply@myapp.com",
+              "from_parsed": {
+                "address": "no-reply@myapp.com",
+                "name": "My App"
+              },
+              "to": "mynamespace.verify-user789@inbox.testmail.app",
+              "subject": "Verify your new email address",
+              "text": "Please verify: https://myapp.com/verify/token789",
+              "tag": "verify-user789",
+              "timestamp": 1686003000000.0,
+              "spam_score": 0.5
+            },
+            {
+              "from": "no-reply@myapp.com",
+              "from_parsed": {
+                "address": "no-reply@myapp.com",
+                "name": "My App"
+              },
+              "to": "mynamespace.verify-user456@inbox.testmail.app",
+              "subject": "Verify your account",
+              "text": "Please verify: https://myapp.com/verify/token456",
+              "tag": "verify-user456",
+              "timestamp": 1686001000000.0,
+              "spam_score": 0.5
+            },
+            {
+              "from": "no-reply@myapp.com",
+              "from_parsed": {
+                "address": "no-reply@myapp.com",
+                "name": "My App"
+              },
+              "to": "mynamespace.verify-user123@inbox.testmail.app",
+              "subject": "Verify your email address",
+              "text": "Please verify: https://myapp.com/verify/token123",
+              "tag": "verify-user123",
+              "timestamp": 1686000000000.0,
+              "spam_score": 0.5
+            }
+          ]
+        }
+      }
+    }
+  }
+}
