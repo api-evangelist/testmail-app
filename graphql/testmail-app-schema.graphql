@@ -1,0 +1,337 @@
+schema {
+  query: Query
+}
+
+"""SCHEMA"""
+type Query {
+  """Retrieves emails from the inbox at your namespace."""
+  inbox(
+    """
+    This is your unique namespace - remember that emails are sent to {namespace}.{tag}@inbox.testmail.app
+    The apikey you specify as a Bearer token in the Authorization header must be authorized to access this namespace (otherwise you'll get an authentication error).
+    You can generate apikeys for your namespaces by signing in at testmail.app
+    """
+    namespace: String!
+
+    """
+    Retrieves emails based on your custom tag - remember that emails are sent to {namespace}.{tag}@inbox.testmail.app
+    Tags allow you to have an unlimited number of email inboxes within each namespace.
+    For example: you can send emails to {namespace}.{john}@inbox.testmail.app and to {namespace}.{tony}@inbox.testmail.app, and then retrieve them separately by setting this tag parameter to "john" or "tony".
+    """
+    tag: String
+
+    """
+    Retrieves emails based on the *beginning* of your custom tag - remember that emails are sent to {namespace}.{tag}@inbox.testmail.app
+    For example: if tag_prefix is set to "john", it will match "john", "john.smith", "john.anything", etc.
+    """
+    tag_prefix: String
+
+    """
+    Retrieves emails received after this timestamp.
+    Timestamp in milliseconds since January 1, 1970.
+    Defaults to the longest retention period allowed on your plan (e.g. 30 days, 3 days, or 24 hours ago).
+    """
+    timestamp_from: Float
+
+    """
+    Retrieves emails received before this timestamp.
+    Timestamp in milliseconds since January 1, 1970.
+    Defaults to now (the current timestamp on the server that receives your request).
+    If livequery is set to true, this parameter is ignored.
+    """
+    timestamp_to: Float
+
+    """Advanced filters allow you to include or exclude results based on specified field values or wildcard searches."""
+    advanced_filters: [AdvancedFilter]
+
+    """
+    By default: results are sorted by timestamp in descending order.
+    You can customize this behaviour with advanced_sorts.
+    Note that if you provide multiple sorts, the order matters (higher priority sorts first).
+    """
+    advanced_sorts: [Sort]
+
+    """
+    Livequeries are useful when you're expecting an email you just sent and you want to avoid repeatedly polling the inbox until it appears.
+    If set to true, the server will wait until at least one email is matched before responding (by waiting until a new matching email hits the inbox).
+    Live queries can last for as long as you want but each request is capped at 1 minute after which the server responds with a 307 redirect to itself.
+    So make sure that your client follows 307 redirects - otherwise your livequery will last only 1 minute.
+    Note that livequeries simply wait for a single match - if your request already matches any emails, it will return immediately instead of waiting.
+    We suggest using the available advanced filters and the timestamp_from parameter to make sure that you are waiting and watching for the right emails.
+    """
+    livequery: Boolean = false
+
+    """
+    This the maximum number of emails pulled in this request. You can use this for pagination.
+    You can set this to any number. However, [IMPORTANT] each request response is limited to 10MB, so if you querying full raw emails with large attachments, keep this number low.
+    """
+    limit: Int = 10
+
+    """
+    This is the number of emails to offset (ignore) - use this for pagination.
+    Note that emails are always sorted by timestamp in descending order (unless you specify advanced_sorts).
+    """
+    offset: Int = 0
+  ): Inbox
+
+  """(for health checks)"""
+  ping: Boolean
+}
+
+"""Object containing the result of the inbox retrieval request."""
+type Inbox {
+  """Whether or not the inbox retrieval request was successful."""
+  result: Outcome
+
+  """If the request failed, this message will detail why."""
+  message: String
+
+  """The number of emails that matched your query."""
+  count: Int
+
+  """The number of emails retrieved based on the limit parameter of your query (this is useful for pagination)."""
+  limit: Int
+
+  """The number of emails offset based on the offset parameter of your query (this is useful for pagination)."""
+  offset: Int
+
+  """Array of matching emails from the inbox."""
+  emails: [Email]
+}
+
+"""Email object (for emails in the inbox)."""
+type Email {
+  """This is the unique id (and primary key) for the email in our database."""
+  id: ID
+
+  """The namespace at which this email was received - remember that emails are sent to {namespace}.{tag}@inbox.testmail.app"""
+  namespace: String
+
+  """The custom tag (mailbox) at which this email was received - remember that emails are sent to {namespace}.{tag}@inbox.testmail.app"""
+  tag: String
+
+  """
+  Timestamp in milliseconds since January 1, 1970.
+  This is the timestamp on the server that stored and indexed the email at the time when it received the email from the SMTP server.
+  Note that this can differ from the "date" value available in the EmailParsed object.
+  """
+  timestamp: Float
+
+  """The return path (from the SMTP envelope)"""
+  envelope_from: String
+
+  """The address at which we received this email (from the SMTP envelope)"""
+  envelope_to: String
+
+  """
+  The email sender parsed from the message headers.
+  Warning: this can be spoofed! (the sender specifies this header) vs. the from address in the SMTP envelope (see "envelope_from") which is harder to spoof.
+  """
+  from: String
+
+  """...when you want the name and email parsed out (instead of a combined string)"""
+  from_parsed: [ParsedAddress]
+
+  """
+  The email recipient field parsed from the message headers.
+  Warning: this can be spoofed! (the sender specifies this header) vs. the to address in the SMTP envelope (see "envelope_to") which is harder to spoof.
+  """
+  to: String
+
+  """...when you want the name and email parsed out for each to address (instead of a combined string with all addresses)"""
+  to_parsed: [ParsedAddress]
+
+  """The email cc field parsed from the message headers."""
+  cc: String
+
+  """...when you want the name and email parsed out for each to address (instead of a combined string with all addresses)"""
+  cc_parsed: [ParsedAddress]
+
+  """The subject line of the email parsed from the message headers."""
+  subject: String
+
+  """Array of all email header lines."""
+  headers: [HeaderLine]
+
+  """
+  Timestamp in milliseconds since January 1, 1970.
+  Extracted from the date header (might not be accurate).
+  This differs from "timestamp" which is recorded on the server side when parsing the email.
+  """
+  date: Float
+
+  """The "Message-Id" header value"""
+  messageId: String
+
+  """Array of referenced "Message-Id" header values"""
+  references: [String]
+
+  """
+  The html body of the message.
+  If the html includes embedded images as cid: urls they are all replaced with base64 formatted data: URIs.
+  """
+  html: String
+
+  """The plaintext body of the message."""
+  text: String
+
+  """Array of message attachments (if any)"""
+  attachments: [Attachment]
+
+  """
+  Whether the email passes the SPF (Sender Policy Framework) authentication check.
+  If the email fails this check, it might not be from the domain that it claims to be from.
+  This information is useful for spam filters.
+  """
+  SPF: String
+
+  """
+  Whether the email passes the DKIM (DomainKeys Identified Mail) authentication check.
+  If the email fails this check, it might not be from the domain that it claims to be from.
+  This information is useful for spam filters.
+  """
+  dkim: String
+
+  """The spam score (higher is bad)."""
+  spam_score: Float
+
+  """The full spam scoring report. Useful information for improving deliverability."""
+  spam_report: String
+
+  """The sender's IP address."""
+  sender_ip: String
+
+  """Download the raw, full MIME message at this URL (hosted by testmail). This is useful if you want to use your own parser."""
+  downloadUrl: String
+}
+
+"""Address object containing the parsed name and email address."""
+type ParsedAddress {
+  """The email address."""
+  address: String
+
+  """The name part of the email."""
+  name: String
+
+  """Array of grouped addresses."""
+  group: String
+}
+
+"""HeaderLine object containing the parsed header line."""
+type HeaderLine {
+  """The lowercase header key (e.g. "content-type")."""
+  key: String
+
+  """The full header line including the key (e.g. "Content-Type: text/plain; charset=us-ascii")."""
+  line: String
+}
+
+"""Attachment object."""
+type Attachment {
+  """The name of the attachment"""
+  filename: String
+
+  """The MIME type of the message"""
+  contentType: String
+
+  """MD5 hash of the message content"""
+  checksum: String
+
+  """Message size in bytes"""
+  size: Float
+
+  """Array of all attachment header lines"""
+  headers: [HeaderLine]
+
+  """Download the attachment at this URL (hosted by testmail)"""
+  downloadUrl: String
+
+  """The Content-Id header value (if present)"""
+  contentId: String
+
+  """The Content-Id without < and >"""
+  cid: String
+
+  """
+  If true then this attachment should not be offered for download
+  (at least not in the main attachments list)
+  """
+  related: Boolean
+}
+
+"""INPUT TYPES: ADVANCED FILTERS"""
+input AdvancedFilter {
+  field: FilterField!
+  match: FilterMatch!
+  action: FilterAction!
+  value: String!
+}
+
+input Sort {
+  field: SortField!
+  order: SortOrder!
+}
+
+"""INPUT TYPES: ADVANCED FILTERS"""
+enum FilterField {
+  tag
+  envelope_from
+  envelope_to
+  from
+  to
+  cc
+  subject
+  """Note: if text field is >30kb, it won't be indexed for advanced search! (See testmail.app/docs for details)"""
+  text
+  """Note: if html field is >30kb, it won't be indexed for advanced search! (See testmail.app/docs for details)"""
+  html
+  sender_ip
+  """This is the unique id (and primary key) for the email in our database"""
+  id
+}
+
+enum FilterMatch {
+  """Field must exactly equal value"""
+  exact
+  """Use wildcards * and ?"""
+  wildcard
+}
+
+enum FilterAction {
+  """Only results that match the filter will be returned (included)"""
+  include
+  """Results that match the filter will excluded from the search results"""
+  exclude
+}
+
+"""INPUT TYPES: ADVANCED SORTS"""
+enum SortField {
+  timestamp
+  tag
+  envelope_from
+  envelope_to
+  from
+  to
+  cc
+  subject
+  sender_ip
+  spam_score
+}
+
+enum SortOrder {
+  """Sort in ascending order"""
+  asc
+  """Sort in descending order"""
+  desc
+}
+
+"""OUTPUT TYPES"""
+enum Outcome {
+  success
+  fail
+}
+
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
