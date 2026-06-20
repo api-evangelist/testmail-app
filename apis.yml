@@ -7,7 +7,7 @@ description: Testmail is an email testing API platform for developers and QA tea
   workflows and CI/CD pipelines. Key capabilities include wildcard tag searches, live
   queries, pagination, spam score testing via SpamAssassin, and attachment handling.
 type: Index
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 url: https://raw.githubusercontent.com/api-evangelist/testmail-app/refs/heads/main/apis.yml
 created: '2026-06-13'
 modified: '2026-06-13'
