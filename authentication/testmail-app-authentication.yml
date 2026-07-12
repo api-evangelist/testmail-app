@@ -1,0 +1,24 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/testmail-app-graphql-api-openapi.yml, openapi/testmail-app-json-api-openapi.yml
+summary:
+  types:
+  - apiKey
+  - http
+  api_key_in:
+  - query
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  description: 'API key as Bearer token. Obtain from the Testmail developer console and pass
+    as: Authorization: Bearer YOUR_API_KEY'
+  sources:
+  - openapi/testmail-app-graphql-api-openapi.yml
+- name: ApiKeyQuery
+  type: apiKey
+  in: query
+  parameter: apikey
+  description: API key retrieved from the Testmail developer console.
+  sources:
+  - openapi/testmail-app-json-api-openapi.yml

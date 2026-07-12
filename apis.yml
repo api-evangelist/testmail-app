@@ -58,6 +58,10 @@ apis:
   - type: OpenAPI
     url: openapi/testmail-app-graphql-api-openapi.yml
 common:
+- type: DomainSecurity
+  url: security/testmail-app-domain-security.yml
+- type: Authentication
+  url: authentication/testmail-app-authentication.yml
 - type: Website
   url: https://testmail.app
 - type: Documentation
