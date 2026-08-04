@@ -1,0 +1,336 @@
+openapi: 3.0.3
+info:
+  title: Testmail JSON API
+  description: >-
+    RESTful JSON API for retrieving test emails from Testmail programmable
+    inboxes. Supports filtering by namespace and tag, pagination, live polling
+    queries, and spam score reports. Authentication via API key as query
+    parameter. Emails sent to {namespace}.{tag}@inbox.testmail.app are
+    retrievable through this endpoint.
+  version: 1.0.0
+  contact:
+    url: https://testmail.app/docs/
+  license:
+    name: Proprietary
+    url: https://testmail.app
+servers:
+  - url: https://api.testmail.app/api
+    description: Testmail Production API
+
+security:
+  - ApiKeyQuery: []
+
+tags:
+  - name: Inbox
+    description: Retrieve test emails from programmable inboxes
+
+paths:
+  /json:
+    get:
+      operationId: getEmails
+      summary: Retrieve emails from a namespace inbox
+      description: >-
+        Retrieves test emails from the specified namespace inbox. Supports
+        filtering by tag, timestamp range, and pagination. Optionally waits for
+        new emails with the livequery parameter. If livequery is active and no
+        matching emails arrive within 60 seconds, the server returns HTTP 307
+        and the client must follow the redirect and resend the request.
+      tags:
+        - Inbox
+      parameters:
+        - name: apikey
+          in: query
+          required: true
+          description: API authentication key retrieved from the developer console.
+          schema:
+            type: string
+        - name: namespace
+          in: query
+          required: true
+          description: Target namespace identifier. Emails are routed to {namespace}.{tag}@inbox.testmail.app.
+          schema:
+            type: string
+        - name: tag
+          in: query
+          required: false
+          description: Filter by exact tag match.
+          schema:
+            type: string
+        - name: tag_prefix
+          in: query
+          required: false
+          description: Filter by tag prefix (wildcard prefix search).
+          schema:
+            type: string
+        - name: timestamp_from
+          in: query
+          required: false
+          description: Start time filter in milliseconds since Unix epoch.
+          schema:
+            type: integer
+            format: int64
+        - name: timestamp_to
+          in: query
+          required: false
+          description: End time filter in milliseconds since Unix epoch.
+          schema:
+            type: integer
+            format: int64
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of emails to return per request.
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          required: false
+          description: Number of emails to skip for pagination.
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            maximum: 9899
+        - name: livequery
+          in: query
+          required: false
+          description: >-
+            When true, the server waits for new matching emails before
+            responding. Returns HTTP 307 after 60 seconds if no emails arrive;
+            client must follow redirects.
+          schema:
+            type: boolean
+            default: false
+        - name: pretty
+          in: query
+          required: false
+          description: When true, prettifies (indents) the JSON response output.
+          schema:
+            type: boolean
+            default: false
+        - name: headers
+          in: query
+          required: false
+          description: When true, includes raw email headers in each email object.
+          schema:
+            type: boolean
+            default: false
+        - name: spam_report
+          in: query
+          required: false
+          description: >-
+            When true, includes SpamAssassin spam analysis data (spam_score and
+            spam_report) in each email object.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Successful response containing email list and pagination metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailListResponse'
+              examples:
+                success:
+                  $ref: '#/components/examples/EmailListSuccess'
+                empty:
+                  $ref: '#/components/examples/EmailListEmpty'
+        '307':
+          description: >-
+            Temporary redirect issued by livequery when no matching emails
+            arrive within 60 seconds. Client must follow the redirect and resend
+            the request.
+          headers:
+            Location:
+              description: URL to resend the request to (same URL).
+              schema:
+                type: string
+                format: uri
+        '400':
+          description: Bad request — missing or invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: apikey
+      description: API key retrieved from the Testmail developer console.
+
+  schemas:
+    Email:
+      type: object
+      description: A single test email retrieved from a Testmail inbox.
+      properties:
+        from:
+          type: string
+          description: Sender email address.
+          example: sender@example.com
+        to:
+          type: string
+          description: Recipient email address in the testmail namespace.
+          example: mynamespace.mytag@inbox.testmail.app
+        subject:
+          type: string
+          description: Email subject line.
+          example: Welcome to Our Service
+        text:
+          type: string
+          description: Plain-text body of the email.
+          example: Please verify your account by clicking the link below.
+        html:
+          type: string
+          description: HTML body of the email.
+          example: '<p>Please <a href="https://example.com/verify">verify</a> your account.</p>'
+        tag:
+          type: string
+          description: Tag portion of the recipient address used to route the email.
+          example: mytag
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp in milliseconds when the email was received.
+          example: 1686000000000
+        headers:
+          type: array
+          description: Raw email headers. Only present when headers=true is requested.
+          items:
+            $ref: '#/components/schemas/EmailHeader'
+        spam_score:
+          type: number
+          format: float
+          description: >-
+            SpamAssassin spam score. Only present when spam_report=true. Scores
+            above 5 are typically flagged as spam.
+          example: 1.2
+        spam_report:
+          type: string
+          description: >-
+            Detailed SpamAssassin spam analysis report. Only present when
+            spam_report=true.
+          example: "SpamAssassin Score: 1.2\nTests: HTML_MESSAGE=0.001"
+
+    EmailHeader:
+      type: object
+      description: A single raw email header line.
+      properties:
+        line:
+          type: string
+          description: Full raw header line including name and value.
+          example: "Content-Type: text/html; charset=utf-8"
+        key:
+          type: string
+          description: Header name/key in lowercase.
+          example: content-type
+
+    EmailListResponse:
+      type: object
+      description: Response envelope for a list of emails.
+      required:
+        - result
+        - count
+        - limit
+        - offset
+        - emails
+      properties:
+        result:
+          type: string
+          enum:
+            - success
+            - fail
+          description: Indicates whether the API call succeeded.
+          example: success
+        message:
+          type: string
+          nullable: true
+          description: Human-readable message, populated on failure.
+          example: null
+        count:
+          type: integer
+          description: Total number of emails matching the query (before pagination).
+          example: 3
+        limit:
+          type: integer
+          description: Maximum emails returned per page as specified in the request.
+          example: 10
+        offset:
+          type: integer
+          description: Number of emails skipped as specified in the request.
+          example: 0
+        emails:
+          type: array
+          description: Array of email objects matching the query.
+          items:
+            $ref: '#/components/schemas/Email'
+
+    ErrorResponse:
+      type: object
+      description: Error response envelope.
+      required:
+        - result
+      properties:
+        result:
+          type: string
+          enum:
+            - fail
+          description: Always "fail" for error responses.
+          example: fail
+        message:
+          type: string
+          description: Human-readable error description.
+          example: "Missing required parameter: namespace"
+
+  examples:
+    EmailListSuccess:
+      summary: Successful email retrieval
+      value:
+        result: success
+        message: null
+        count: 2
+        limit: 10
+        offset: 0
+        emails:
+          - from: sender@example.com
+            to: mynamespace.verify-user123@inbox.testmail.app
+            subject: Please verify your email address
+            text: Click here to verify your account.
+            html: '<p>Click <a href="https://example.com/verify/abc123">here</a> to verify.</p>'
+            tag: verify-user123
+            timestamp: 1686000000000
+          - from: no-reply@service.com
+            to: mynamespace.reset-user456@inbox.testmail.app
+            subject: Password reset request
+            text: Use this link to reset your password.
+            html: '<p>Reset your <a href="https://example.com/reset/xyz789">password</a>.</p>'
+            tag: reset-user456
+            timestamp: 1686001000000
+
+    EmailListEmpty:
+      summary: Empty inbox response
+      value:
+        result: success
+        message: null
+        count: 0
+        limit: 10
+        offset: 0
+        emails: []

@@ -1,0 +1,16 @@
+{
+  "provider": "testmail-app",
+  "sources": [
+    "testmail-app-graphql-api-openapi.yml",
+    "testmail-app-inbox-api-openapi.yml"
+  ],
+  "outputs": [
+    "testmail-app-graphql-api-openapi.yml",
+    "testmail-app-inbox-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
