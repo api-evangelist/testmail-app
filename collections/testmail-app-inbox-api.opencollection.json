@@ -1,0 +1,109 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Testmail GraphQL Inbox API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Inbox",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Retrieve emails from a namespace inbox",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.testmail.app/api/json",
+            "params": [
+              {
+                "name": "apikey",
+                "value": "",
+                "type": "query",
+                "description": "API authentication key retrieved from the developer console."
+              },
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "query",
+                "description": "Target namespace identifier. Emails are routed to {namespace}.{tag}@inbox.testmail.app."
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Filter by exact tag match."
+              },
+              {
+                "name": "tag_prefix",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tag prefix (wildcard prefix search)."
+              },
+              {
+                "name": "timestamp_from",
+                "value": "",
+                "type": "query",
+                "description": "Start time filter in milliseconds since Unix epoch."
+              },
+              {
+                "name": "timestamp_to",
+                "value": "",
+                "type": "query",
+                "description": "End time filter in milliseconds since Unix epoch."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of emails to return per request."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of emails to skip for pagination."
+              },
+              {
+                "name": "livequery",
+                "value": "",
+                "type": "query",
+                "description": "When true, the server waits for new matching emails before responding. Returns HTTP 307 after 60 seconds if no emails arrive; client must follow redirects."
+              },
+              {
+                "name": "pretty",
+                "value": "",
+                "type": "query",
+                "description": "When true, prettifies (indents) the JSON response output."
+              },
+              {
+                "name": "headers",
+                "value": "",
+                "type": "query",
+                "description": "When true, includes raw email headers in each email object."
+              },
+              {
+                "name": "spam_report",
+                "value": "",
+                "type": "query",
+                "description": "When true, includes SpamAssassin spam analysis data (spam_score and spam_report) in each email object."
+              }
+            ]
+          },
+          "docs": "Retrieves test emails from the specified namespace inbox. Supports filtering by tag, timestamp range, and pagination. Optionally waits for new emails with the livequery parameter. If livequery is active and no matching emails arrive within 60 seconds, the server returns HTTP 307 and the client must follow the redirect and resend the request."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

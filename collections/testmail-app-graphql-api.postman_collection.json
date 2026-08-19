@@ -1,0 +1,346 @@
+{
+  "item": [
+    {
+      "id": "15c6645f-5c2d-4f5f-a500-7fb2ba0154f1",
+      "name": "GraphQL",
+      "description": {
+        "content": "GraphQL inbox query endpoint",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "056a4b53-6d24-47bd-b314-e75c48c992d3",
+          "name": "Execute a GraphQL query against the Testmail inbox",
+          "request": {
+            "name": "Execute a GraphQL query against the Testmail inbox",
+            "description": {
+              "content": "Executes a GraphQL query or mutation against the Testmail API. The primary query is `inbox`, which retrieves test emails matching the specified namespace and optional filters. Supports advanced filtering via FilterInput, custom sorting via SortInput, pagination, live queries, and selective field retrieval. When livequery is active the server waits up to 60 seconds for matching emails; if none arrive it returns HTTP 307 and the client must follow the redirect and resend.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "graphql"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"<string>\",\n  \"variables\": {\n    \"key_0\": \"string\",\n    \"key_1\": 1880,\n    \"key_2\": 1823.1240625411037\n  },\n  \"operationName\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "83e82079-cef6-4a09-844a-109b93defc82",
+              "name": "Successful GraphQL response containing the inbox query result.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "graphql"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"query {\\n  inbox(namespace: \\\"mynamespace\\\") {\\n    result\\n    count\\n    emails {\\n      from\\n      to\\n      subject\\n      text\\n      tag\\n      timestamp\\n    }\\n  }\\n}\\n\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"inbox\": {\n      \"result\": \"success\",\n      \"message\": null,\n      \"count\": 2,\n      \"emails\": [\n        {\n          \"from\": \"no-reply@myapp.com\",\n          \"to\": \"mynamespace.verify-abc@inbox.testmail.app\",\n          \"subject\": \"Verify your email\",\n          \"text\": \"Click here to verify.\",\n          \"tag\": \"verify-abc\",\n          \"timestamp\": 1686000000000\n        },\n        {\n          \"from\": \"no-reply@myapp.com\",\n          \"to\": \"mynamespace.verify-def@inbox.testmail.app\",\n          \"subject\": \"Verify your email\",\n          \"text\": \"Click here to verify.\",\n          \"tag\": \"verify-def\",\n          \"timestamp\": 1686001000000\n        }\n      ]\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "17d78bc4-ff43-4737-9c4e-9a87902001b0",
+              "name": "Temporary redirect issued by livequery when no matching emails arrive within 60 seconds. Client must follow the redirect and resend the POST request with the same body.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "graphql"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"query {\\n  inbox(namespace: \\\"mynamespace\\\") {\\n    result\\n    count\\n    emails {\\n      from\\n      to\\n      subject\\n      text\\n      tag\\n      timestamp\\n    }\\n  }\\n}\\n\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Temporary Redirect (since HTTP/1.1)",
+              "code": 307,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "URL to resend the request to (same endpoint).",
+                  "key": "Location",
+                  "value": "http://OXpvDRqgzJjricYphwkWmKlFCdAZ.vsmoutmfH5el1DFihq.QDl0m"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "b735c8b4-8f2a-44e5-a8e2-661dcb26f84f",
+              "name": "Bad request — malformed GraphQL query or missing required fields.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "graphql"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"query {\\n  inbox(namespace: \\\"mynamespace\\\") {\\n    result\\n    count\\n    emails {\\n      from\\n      to\\n      subject\\n      text\\n      tag\\n      timestamp\\n    }\\n  }\\n}\\n\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"errors\": [\n    {\n      \"message\": \"Argument 'namespace' is required\",\n      \"locations\": [\n        {\n          \"line\": 9137,\n          \"column\": 3417\n        },\n        {\n          \"line\": 7634,\n          \"column\": 4981\n        }\n      ],\n      \"path\": [\n        \"string\",\n        \"string\"\n      ]\n    },\n    {\n      \"message\": \"Argument 'namespace' is required\",\n      \"locations\": [\n        {\n          \"line\": 2746,\n          \"column\": 8619\n        },\n        {\n          \"line\": 8249,\n          \"column\": 2088\n        }\n      ],\n      \"path\": [\n        \"string\",\n        \"string\"\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "68013e9a-d3a9-4b98-bd50-521f22d940e8",
+              "name": "Unauthorized — missing or invalid Bearer token.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "graphql"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"query {\\n  inbox(namespace: \\\"mynamespace\\\") {\\n    result\\n    count\\n    emails {\\n      from\\n      to\\n      subject\\n      text\\n      tag\\n      timestamp\\n    }\\n  }\\n}\\n\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"errors\": [\n    {\n      \"message\": \"Argument 'namespace' is required\",\n      \"locations\": [\n        {\n          \"line\": 1532,\n          \"column\": 1032\n        },\n        {\n          \"line\": 4097,\n          \"column\": 2668\n        }\n      ],\n      \"path\": [\n        \"string\",\n        \"string\"\n      ]\n    },\n    {\n      \"message\": \"Argument 'namespace' is required\",\n      \"locations\": [\n        {\n          \"line\": 5285,\n          \"column\": 2046\n        },\n        {\n          \"line\": 4511,\n          \"column\": 6491\n        }\n      ],\n      \"path\": [\n        \"string\",\n        \"string\"\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "fd6209a2-cffe-4da6-89d3-7915b7c44e6b",
+              "name": "Rate limit exceeded.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "graphql"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"query {\\n  inbox(namespace: \\\"mynamespace\\\") {\\n    result\\n    count\\n    emails {\\n      from\\n      to\\n      subject\\n      text\\n      tag\\n      timestamp\\n    }\\n  }\\n}\\n\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"errors\": [\n    {\n      \"message\": \"Argument 'namespace' is required\",\n      \"locations\": [\n        {\n          \"line\": 1532,\n          \"column\": 1032\n        },\n        {\n          \"line\": 4097,\n          \"column\": 2668\n        }\n      ],\n      \"path\": [\n        \"string\",\n        \"string\"\n      ]\n    },\n    {\n      \"message\": \"Argument 'namespace' is required\",\n      \"locations\": [\n        {\n          \"line\": 5285,\n          \"column\": 2046\n        },\n        {\n          \"line\": 4511,\n          \"column\": 6491\n        }\n      ],\n      \"path\": [\n        \"string\",\n        \"string\"\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.testmail.app/api",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "a56ad472-6fd7-41d4-8c3c-0a841b6995c0",
+    "name": "Testmail GraphQL API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Full-featured GraphQL API for querying test emails from Testmail programmable inboxes. Supports advanced filtering, custom sorting, field selection, live queries, pagination, and spam reports. Authenticated via Bearer token in the Authorization header. The GraphQL endpoint accepts POST requests with a JSON body containing the query and optional variables.",
+      "type": "text/plain"
+    }
+  }
+}

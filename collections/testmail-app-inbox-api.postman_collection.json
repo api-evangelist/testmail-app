@@ -1,0 +1,611 @@
+{
+  "item": [
+    {
+      "id": "a3641c0c-18e0-4e3b-80cd-677a1d64a46e",
+      "name": "Inbox",
+      "description": {
+        "content": "Retrieve test emails from programmable inboxes",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "8465f982-c32c-49b7-9e38-2b9c7e5b3145",
+          "name": "Retrieve emails from a namespace inbox",
+          "request": {
+            "name": "Retrieve emails from a namespace inbox",
+            "description": {
+              "content": "Retrieves test emails from the specified namespace inbox. Supports filtering by tag, timestamp range, and pagination. Optionally waits for new emails with the livequery parameter. If livequery is active and no matching emails arrive within 60 seconds, the server returns HTTP 307 and the client must follow the redirect and resend the request.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "json"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "apikey",
+                  "value": "<string>",
+                  "description": "(Required) API authentication key retrieved from the developer console."
+                },
+                {
+                  "disabled": false,
+                  "key": "namespace",
+                  "value": "<string>",
+                  "description": "(Required) Target namespace identifier. Emails are routed to {namespace}.{tag}@inbox.testmail.app."
+                },
+                {
+                  "disabled": false,
+                  "key": "tag",
+                  "value": "<string>",
+                  "description": "Filter by exact tag match."
+                },
+                {
+                  "disabled": false,
+                  "key": "tag_prefix",
+                  "value": "<string>",
+                  "description": "Filter by tag prefix (wildcard prefix search)."
+                },
+                {
+                  "disabled": false,
+                  "key": "timestamp_from",
+                  "value": "<long>",
+                  "description": "Start time filter in milliseconds since Unix epoch."
+                },
+                {
+                  "disabled": false,
+                  "key": "timestamp_to",
+                  "value": "<long>",
+                  "description": "End time filter in milliseconds since Unix epoch."
+                },
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of emails to return per request."
+                },
+                {
+                  "disabled": false,
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Number of emails to skip for pagination."
+                },
+                {
+                  "disabled": false,
+                  "key": "livequery",
+                  "value": "false",
+                  "description": "When true, the server waits for new matching emails before responding. Returns HTTP 307 after 60 seconds if no emails arrive; client must follow redirects."
+                },
+                {
+                  "disabled": false,
+                  "key": "pretty",
+                  "value": "false",
+                  "description": "When true, prettifies (indents) the JSON response output."
+                },
+                {
+                  "disabled": false,
+                  "key": "headers",
+                  "value": "false",
+                  "description": "When true, includes raw email headers in each email object."
+                },
+                {
+                  "disabled": false,
+                  "key": "spam_report",
+                  "value": "false",
+                  "description": "When true, includes SpamAssassin spam analysis data (spam_score and spam_report) in each email object."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6115f3aa-055e-480f-9f64-be3dd12880f0",
+              "name": "Successful response containing email list and pagination metadata.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "json"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "apikey",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "namespace",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag_prefix",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "timestamp_from",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "timestamp_to",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "livequery",
+                      "value": "false"
+                    },
+                    {
+                      "key": "pretty",
+                      "value": "false"
+                    },
+                    {
+                      "key": "headers",
+                      "value": "false"
+                    },
+                    {
+                      "key": "spam_report",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"result\": \"success\",\n  \"message\": null,\n  \"count\": 2,\n  \"limit\": 10,\n  \"offset\": 0,\n  \"emails\": [\n    {\n      \"from\": \"sender@example.com\",\n      \"to\": \"mynamespace.verify-user123@inbox.testmail.app\",\n      \"subject\": \"Please verify your email address\",\n      \"text\": \"Click here to verify your account.\",\n      \"html\": \"<p>Click <a href=\\\"https://example.com/verify/abc123\\\">here</a> to verify.</p>\",\n      \"tag\": \"verify-user123\",\n      \"timestamp\": 1686000000000\n    },\n    {\n      \"from\": \"no-reply@service.com\",\n      \"to\": \"mynamespace.reset-user456@inbox.testmail.app\",\n      \"subject\": \"Password reset request\",\n      \"text\": \"Use this link to reset your password.\",\n      \"html\": \"<p>Reset your <a href=\\\"https://example.com/reset/xyz789\\\">password</a>.</p>\",\n      \"tag\": \"reset-user456\",\n      \"timestamp\": 1686001000000\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "aada4427-2464-4975-aa21-fd58330d5b12",
+              "name": "Temporary redirect issued by livequery when no matching emails arrive within 60 seconds. Client must follow the redirect and resend the request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "json"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "apikey",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "namespace",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag_prefix",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "timestamp_from",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "timestamp_to",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "livequery",
+                      "value": "false"
+                    },
+                    {
+                      "key": "pretty",
+                      "value": "false"
+                    },
+                    {
+                      "key": "headers",
+                      "value": "false"
+                    },
+                    {
+                      "key": "spam_report",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Temporary Redirect (since HTTP/1.1)",
+              "code": 307,
+              "header": [
+                {
+                  "disabled": false,
+                  "description": "URL to resend the request to (same URL).",
+                  "key": "Location",
+                  "value": "http://itHdXmQYeXsvCkkpk.qfisNpcXcjA0ZK86T2jz7n5ivelSbNPnlllaEMA56W"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "2ae2a396-1c00-4582-a5e5-0324a88cce33",
+              "name": "Bad request — missing or invalid parameters.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "json"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "apikey",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "namespace",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag_prefix",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "timestamp_from",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "timestamp_to",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "livequery",
+                      "value": "false"
+                    },
+                    {
+                      "key": "pretty",
+                      "value": "false"
+                    },
+                    {
+                      "key": "headers",
+                      "value": "false"
+                    },
+                    {
+                      "key": "spam_report",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"result\": \"fail\",\n  \"message\": \"Missing required parameter: namespace\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "468c5831-c211-4aee-9d67-4efd57f78672",
+              "name": "Unauthorized — missing or invalid API key.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "json"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "apikey",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "namespace",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag_prefix",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "timestamp_from",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "timestamp_to",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "livequery",
+                      "value": "false"
+                    },
+                    {
+                      "key": "pretty",
+                      "value": "false"
+                    },
+                    {
+                      "key": "headers",
+                      "value": "false"
+                    },
+                    {
+                      "key": "spam_report",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"result\": \"fail\",\n  \"message\": \"Missing required parameter: namespace\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "caa9234e-7145-4f48-984a-1496174b5ae3",
+              "name": "Rate limit exceeded.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "json"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "apikey",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "namespace",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "tag_prefix",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "timestamp_from",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "timestamp_to",
+                      "value": "<long>"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "livequery",
+                      "value": "false"
+                    },
+                    {
+                      "key": "pretty",
+                      "value": "false"
+                    },
+                    {
+                      "key": "headers",
+                      "value": "false"
+                    },
+                    {
+                      "key": "spam_report",
+                      "value": "false"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"result\": \"fail\",\n  \"message\": \"Missing required parameter: namespace\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.testmail.app/api",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "d57490c1-58f0-4aeb-a79e-f053a79f1e73",
+    "name": "Testmail GraphQL Inbox API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Full-featured GraphQL API for querying test emails from Testmail programmable inboxes. Supports advanced filtering, custom sorting, field selection, live queries, pagination, and spam reports. Authenticated via Bearer token in the Authorization header. The GraphQL endpoint accepts POST requests with a JSON body containing the query and optional variables.",
+      "type": "text/plain"
+    }
+  }
+}

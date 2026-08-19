@@ -1,0 +1,39 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Testmail GraphQL API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "GraphQL",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Execute a GraphQL query against the Testmail inbox",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.testmail.app/api/graphql",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Executes a GraphQL query or mutation against the Testmail API. The primary query is `inbox`, which retrieves test emails matching the specified namespace and optional filters. Supports advanced filtering via FilterInput, custom sorting via SortInput, pagination, live queries, and selective field retrieval. When livequery is active the server waits up to 60 seconds for matching emails; if none arrive it returns HTTP 307 and the client must follow the redirect and resend."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
