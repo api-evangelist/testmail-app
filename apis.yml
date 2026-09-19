@@ -68,6 +68,8 @@ apis:
   humanURL: https://testmail.app/docs/
   baseURL: https://api.testmail.app/api/graphql
   tags:
+  - GraphQL
+  tags_raw:
   - Graph QL
   properties:
   - type: OpenAPI
