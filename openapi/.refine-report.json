@@ -1,16 +1,24 @@
 {
   "provider": "testmail-app",
   "sources": [
-    "testmail-app-graphql-api-openapi.yml",
-    "testmail-app-inbox-api-openapi.yml"
+    "_original/testmail-app-json-api-openapi.yml",
+    "testmail-app-graph-ql-api-openapi.yml"
   ],
   "outputs": [
-    "testmail-app-graphql-api-openapi.yml",
-    "testmail-app-inbox-api-openapi.yml"
+    "testmail-app-inbox-api-openapi.yml",
+    "testmail-app-graph-ql-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
-  "warnings": [],
-  "notes": [],
-  "skipped": []
+  "warnings": [
+    "testmail-app-graph-ql-api-openapi.yml: previously refined output kept for 1 operation(s) no archived document covers (e.g. /graphql post); its other 0 operation(s) came from the archive and were dropped from it. The archive is incomplete for this provider \u2014 re-harvest to restore _original/ as the full source of truth."
+  ],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "testmail-app-json-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "testmail-app-inbox-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Testmail GraphQL API
+  title: Testmail Graph QL API
   description: Full-featured GraphQL API for querying test emails from Testmail programmable inboxes. Supports advanced filtering, custom sorting, field selection, live queries, pagination, and spam reports. Authenticated via Bearer token in the Authorization header. The GraphQL endpoint accepts POST requests with a JSON body containing the query and optional variables.
   version: 1.0.0
   contact:
@@ -14,7 +14,7 @@ servers:
 security:
 - BearerAuth: []
 tags:
-- name: GraphQL
+- name: Graph QL
   description: GraphQL inbox query endpoint
 paths:
   /graphql:
@@ -23,7 +23,7 @@ paths:
       summary: Execute a GraphQL query against the Testmail inbox
       description: Executes a GraphQL query or mutation against the Testmail API. The primary query is `inbox`, which retrieves test emails matching the specified namespace and optional filters. Supports advanced filtering via FilterInput, custom sorting via SortInput, pagination, live queries, and selective field retrieval. When livequery is active the server waits up to 60 seconds for matching emails; if none arrive it returns HTTP 307 and the client must follow the redirect and resend.
       tags:
-      - GraphQL
+      - Graph QL
       requestBody:
         required: true
         content:
@@ -77,10 +77,6 @@ paths:
                 $ref: '#/components/schemas/GraphQLErrorResponse'
 components:
   examples:
-    AdvancedFilterQuery:
-      summary: Advanced filter by subject wildcard
-      value:
-        query: "query {\n  inbox(\n    namespace: \"mynamespace\"\n    advanced_filters: [{ field: \"subject\", match: \"wildcard\", action: \"include\", value: \"Welcome*\" }]\n    advanced_sorts: [{ field: \"timestamp\", order: \"desc\" }]\n    limit: 20\n  ) {\n    result\n    count\n    emails {\n      from\n      subject\n      tag\n      timestamp\n      spam_score\n    }\n  }\n}\n"
     InboxQueryResponse:
       summary: Successful inbox query response
       value:
@@ -102,14 +98,18 @@ components:
               text: Click here to verify.
               tag: verify-def
               timestamp: 1686001000000.0
-    BasicInboxQuery:
-      summary: Retrieve all emails in a namespace
+    AdvancedFilterQuery:
+      summary: Advanced filter by subject wildcard
       value:
-        query: "query {\n  inbox(namespace: \"mynamespace\") {\n    result\n    count\n    emails {\n      from\n      to\n      subject\n      text\n      tag\n      timestamp\n    }\n  }\n}\n"
+        query: "query {\n  inbox(\n    namespace: \"mynamespace\"\n    advanced_filters: [{ field: \"subject\", match: \"wildcard\", action: \"include\", value: \"Welcome*\" }]\n    advanced_sorts: [{ field: \"timestamp\", order: \"desc\" }]\n    limit: 20\n  ) {\n    result\n    count\n    emails {\n      from\n      subject\n      tag\n      timestamp\n      spam_score\n    }\n  }\n}\n"
     LiveQuery:
       summary: Live query waiting for a new email
       value:
         query: "query {\n  inbox(namespace: \"mynamespace\", tag: \"signup-newuser\", livequery: true) {\n    result\n    count\n    emails {\n      from\n      subject\n      text\n      timestamp\n    }\n  }\n}\n"
+    BasicInboxQuery:
+      summary: Retrieve all emails in a namespace
+      value:
+        query: "query {\n  inbox(namespace: \"mynamespace\") {\n    result\n    count\n    emails {\n      from\n      to\n      subject\n      text\n      tag\n      timestamp\n    }\n  }\n}\n"
     TagFilterQuery:
       summary: Filter emails by exact tag
       value:
@@ -118,50 +118,6 @@ components:
           ns: mynamespace
           tag: verify-user123
   schemas:
-    GraphQLRequest:
-      type: object
-      required:
-      - query
-      description: GraphQL request body.
-      properties:
-        query:
-          type: string
-          description: GraphQL query string.
-          example: 'query { inbox(namespace: "mynamespace") { result count emails { from subject } } }'
-        variables:
-          type: object
-          additionalProperties: true
-          description: Optional variables map to inject into the query.
-          example:
-            namespace: mynamespace
-            tag: verify-user123
-        operationName:
-          type: string
-          description: Optional name of the operation to execute when multiple operations are present.
-          example: GetInbox
-    GraphQLResponse:
-      type: object
-      description: GraphQL response envelope.
-      properties:
-        data:
-          type: object
-          description: Query result data keyed by operation name.
-          properties:
-            inbox:
-              $ref: '#/components/schemas/InboxResult'
-        errors:
-          type: array
-          description: List of GraphQL errors, if any.
-          items:
-            $ref: '#/components/schemas/GraphQLError'
-    GraphQLErrorResponse:
-      type: object
-      description: GraphQL error response when no data is returned.
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/GraphQLError'
     GraphQLEmail:
       type: object
       description: A single test email returned by the GraphQL inbox query. Fields are only returned if requested in the GraphQL selection set.
@@ -200,6 +156,67 @@ components:
           format: float
           description: SpamAssassin spam score. Scores above 5 are typically flagged as spam.
           example: 1.2
+    GraphQLResponse:
+      type: object
+      description: GraphQL response envelope.
+      properties:
+        data:
+          type: object
+          description: Query result data keyed by operation name.
+          properties:
+            inbox:
+              $ref: '#/components/schemas/InboxResult'
+        errors:
+          type: array
+          description: List of GraphQL errors, if any.
+          items:
+            $ref: '#/components/schemas/GraphQLError'
+    InboxResult:
+      type: object
+      description: Result of the inbox GraphQL query.
+      properties:
+        result:
+          type: string
+          enum:
+          - success
+          - fail
+          description: Whether the query succeeded.
+          example: success
+        message:
+          type:
+          - string
+          - 'null'
+          description: Human-readable message, populated on failure.
+        count:
+          type: integer
+          description: Total number of emails matching the query (before pagination).
+          example: 5
+        emails:
+          type: array
+          description: Array of email objects matching the query.
+          items:
+            $ref: '#/components/schemas/GraphQLEmail'
+    GraphQLRequest:
+      type: object
+      required:
+      - query
+      description: GraphQL request body.
+      properties:
+        query:
+          type: string
+          description: GraphQL query string.
+          example: 'query { inbox(namespace: "mynamespace") { result count emails { from subject } } }'
+        variables:
+          type: object
+          additionalProperties: true
+          description: Optional variables map to inject into the query.
+          example:
+            namespace: mynamespace
+            tag: verify-user123
+        operationName:
+          type: string
+          description: Optional name of the operation to execute when multiple operations are present.
+          example: GetInbox
     GraphQLError:
       type: object
       description: A single GraphQL error.
@@ -233,30 +250,14 @@ components:
           type: string
           description: Display name associated with the address.
           example: John Sender
-    InboxResult:
+    GraphQLErrorResponse:
       type: object
-      description: Result of the inbox GraphQL query.
+      description: GraphQL error response when no data is returned.
       properties:
-        result:
-          type: string
-          enum:
-          - success
-          - fail
-          description: Whether the query succeeded.
-          example: success
-        message:
-          type: string
-          nullable: true
-          description: Human-readable message, populated on failure.
-        count:
-          type: integer
-          description: Total number of emails matching the query (before pagination).
-          example: 5
-        emails:
+        errors:
           type: array
-          description: Array of email objects matching the query.
           items:
-            $ref: '#/components/schemas/GraphQLEmail'
+            $ref: '#/components/schemas/GraphQLError'
   securitySchemes:
     BearerAuth:
       type: http
