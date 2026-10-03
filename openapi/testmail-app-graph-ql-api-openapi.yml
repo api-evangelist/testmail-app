@@ -77,6 +77,25 @@ paths:
                 $ref: '#/components/schemas/GraphQLErrorResponse'
 components:
   examples:
+    BasicInboxQuery:
+      summary: Retrieve all emails in a namespace
+      value:
+        query: "query {\n  inbox(namespace: \"mynamespace\") {\n    result\n    count\n    emails {\n      from\n      to\n      subject\n      text\n      tag\n      timestamp\n    }\n  }\n}\n"
+    AdvancedFilterQuery:
+      summary: Advanced filter by subject wildcard
+      value:
+        query: "query {\n  inbox(\n    namespace: \"mynamespace\"\n    advanced_filters: [{ field: \"subject\", match: \"wildcard\", action: \"include\", value: \"Welcome*\" }]\n    advanced_sorts: [{ field: \"timestamp\", order: \"desc\" }]\n    limit: 20\n  ) {\n    result\n    count\n    emails {\n      from\n      subject\n      tag\n      timestamp\n      spam_score\n    }\n  }\n}\n"
+    LiveQuery:
+      summary: Live query waiting for a new email
+      value:
+        query: "query {\n  inbox(namespace: \"mynamespace\", tag: \"signup-newuser\", livequery: true) {\n    result\n    count\n    emails {\n      from\n      subject\n      text\n      timestamp\n    }\n  }\n}\n"
+    TagFilterQuery:
+      summary: Filter emails by exact tag
+      value:
+        query: "query GetTaggedEmails($ns: String!, $tag: String) {\n  inbox(namespace: $ns, tag: $tag, limit: 5) {\n    result\n    count\n    emails {\n      from\n      subject\n      tag\n      timestamp\n    }\n  }\n}\n"
+        variables:
+          ns: mynamespace
+          tag: verify-user123
     InboxQueryResponse:
       summary: Successful inbox query response
       value:
@@ -98,26 +117,22 @@ components:
               text: Click here to verify.
               tag: verify-def
               timestamp: 1686001000000.0
-    BasicInboxQuery:
-      summary: Retrieve all emails in a namespace
-      value:
-        query: "query {\n  inbox(namespace: \"mynamespace\") {\n    result\n    count\n    emails {\n      from\n      to\n      subject\n      text\n      tag\n      timestamp\n    }\n  }\n}\n"
-    TagFilterQuery:
-      summary: Filter emails by exact tag
-      value:
-        query: "query GetTaggedEmails($ns: String!, $tag: String) {\n  inbox(namespace: $ns, tag: $tag, limit: 5) {\n    result\n    count\n    emails {\n      from\n      subject\n      tag\n      timestamp\n    }\n  }\n}\n"
-        variables:
-          ns: mynamespace
-          tag: verify-user123
-    AdvancedFilterQuery:
-      summary: Advanced filter by subject wildcard
-      value:
-        query: "query {\n  inbox(\n    namespace: \"mynamespace\"\n    advanced_filters: [{ field: \"subject\", match: \"wildcard\", action: \"include\", value: \"Welcome*\" }]\n    advanced_sorts: [{ field: \"timestamp\", order: \"desc\" }]\n    limit: 20\n  ) {\n    result\n    count\n    emails {\n      from\n      subject\n      tag\n      timestamp\n      spam_score\n    }\n  }\n}\n"
-    LiveQuery:
-      summary: Live query waiting for a new email
-      value:
-        query: "query {\n  inbox(namespace: \"mynamespace\", tag: \"signup-newuser\", livequery: true) {\n    result\n    count\n    emails {\n      from\n      subject\n      text\n      timestamp\n    }\n  }\n}\n"
   schemas:
+    GraphQLResponse:
+      type: object
+      description: GraphQL response envelope.
+      properties:
+        data:
+          type: object
+          description: Query result data keyed by operation name.
+          properties:
+            inbox:
+              $ref: '#/components/schemas/InboxResult'
+        errors:
+          type: array
+          description: List of GraphQL errors, if any.
+          items:
+            $ref: '#/components/schemas/GraphQLError'
     InboxResult:
       type: object
       description: Result of the inbox GraphQL query.
@@ -143,60 +158,12 @@ components:
           description: Array of email objects matching the query.
           items:
             $ref: '#/components/schemas/GraphQLEmail'
-    GraphQLError:
-      type: object
-      description: A single GraphQL error.
-      properties:
-        message:
-          type: string
-          description: Human-readable error message.
-          example: Argument 'namespace' is required
-        locations:
-          type: array
-          items:
-            type: object
-            properties:
-              line:
-                type: integer
-              column:
-                type: integer
-        path:
-          type: array
-          items:
-            type: string
     GraphQLErrorResponse:
       type: object
       description: GraphQL error response when no data is returned.
       properties:
         errors:
           type: array
-          items:
-            $ref: '#/components/schemas/GraphQLError'
-    ParsedAddress:
-      type: object
-      description: Parsed email address components.
-      properties:
-        address:
-          type: string
-          description: The raw email address.
-          example: sender@example.com
-        name:
-          type: string
-          description: Display name associated with the address.
-          example: John Sender
-    GraphQLResponse:
-      type: object
-      description: GraphQL response envelope.
-      properties:
-        data:
-          type: object
-          description: Query result data keyed by operation name.
-          properties:
-            inbox:
-              $ref: '#/components/schemas/InboxResult'
-        errors:
-          type: array
-          description: List of GraphQL errors, if any.
           items:
             $ref: '#/components/schemas/GraphQLError'
     GraphQLEmail:
@@ -258,6 +225,39 @@ components:
           type: string
           description: Optional name of the operation to execute when multiple operations are present.
           example: GetInbox
+    ParsedAddress:
+      type: object
+      description: Parsed email address components.
+      properties:
+        address:
+          type: string
+          description: The raw email address.
+          example: sender@example.com
+        name:
+          type: string
+          description: Display name associated with the address.
+          example: John Sender
+    GraphQLError:
+      type: object
+      description: A single GraphQL error.
+      properties:
+        message:
+          type: string
+          description: Human-readable error message.
+          example: Argument 'namespace' is required
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: integer
+              column:
+                type: integer
+        path:
+          type: array
+          items:
+            type: string
   securitySchemes:
     BearerAuth:
       type: http

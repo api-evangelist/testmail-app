@@ -148,7 +148,96 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
+  examples:
+    EmailListEmpty:
+      summary: Empty inbox response
+      value:
+        result: success
+        message: null
+        count: 0
+        limit: 10
+        offset: 0
+        emails: []
+    EmailListSuccess:
+      summary: Successful email retrieval
+      value:
+        result: success
+        message: null
+        count: 2
+        limit: 10
+        offset: 0
+        emails:
+        - from: sender@example.com
+          to: mynamespace.verify-user123@inbox.testmail.app
+          subject: Please verify your email address
+          text: Click here to verify your account.
+          html: <p>Click <a href="https://example.com/verify/abc123">here</a> to verify.</p>
+          tag: verify-user123
+          timestamp: 1686000000000
+        - from: no-reply@service.com
+          to: mynamespace.reset-user456@inbox.testmail.app
+          subject: Password reset request
+          text: Use this link to reset your password.
+          html: <p>Reset your <a href="https://example.com/reset/xyz789">password</a>.</p>
+          tag: reset-user456
+          timestamp: 1686001000000
   schemas:
+    ErrorResponse:
+      type: object
+      description: Error response envelope.
+      required:
+      - result
+      properties:
+        result:
+          type: string
+          enum:
+          - fail
+          description: Always "fail" for error responses.
+          example: fail
+        message:
+          type: string
+          description: Human-readable error description.
+          example: 'Missing required parameter: namespace'
+    EmailListResponse:
+      type: object
+      description: Response envelope for a list of emails.
+      required:
+      - result
+      - count
+      - limit
+      - offset
+      - emails
+      properties:
+        result:
+          type: string
+          enum:
+          - success
+          - fail
+          description: Indicates whether the API call succeeded.
+          example: success
+        message:
+          type:
+          - string
+          - 'null'
+          description: Human-readable message, populated on failure.
+          example: null
+        count:
+          type: integer
+          description: Total number of emails matching the query (before pagination).
+          example: 3
+        limit:
+          type: integer
+          description: Maximum emails returned per page as specified in the request.
+          example: 10
+        offset:
+          type: integer
+          description: Number of emails skipped as specified in the request.
+          example: 0
+        emails:
+          type: array
+          description: Array of email objects matching the query.
+          items:
+            $ref: '#/components/schemas/Email'
     EmailHeader:
       type: object
       description: A single raw email header line.
@@ -210,95 +299,6 @@ components:
           example: 'SpamAssassin Score: 1.2
 
             Tests: HTML_MESSAGE=0.001'
-    ErrorResponse:
-      type: object
-      description: Error response envelope.
-      required:
-      - result
-      properties:
-        result:
-          type: string
-          enum:
-          - fail
-          description: Always "fail" for error responses.
-          example: fail
-        message:
-          type: string
-          description: Human-readable error description.
-          example: 'Missing required parameter: namespace'
-    EmailListResponse:
-      type: object
-      description: Response envelope for a list of emails.
-      required:
-      - result
-      - count
-      - limit
-      - offset
-      - emails
-      properties:
-        result:
-          type: string
-          enum:
-          - success
-          - fail
-          description: Indicates whether the API call succeeded.
-          example: success
-        message:
-          type:
-          - string
-          - 'null'
-          description: Human-readable message, populated on failure.
-          example: null
-        count:
-          type: integer
-          description: Total number of emails matching the query (before pagination).
-          example: 3
-        limit:
-          type: integer
-          description: Maximum emails returned per page as specified in the request.
-          example: 10
-        offset:
-          type: integer
-          description: Number of emails skipped as specified in the request.
-          example: 0
-        emails:
-          type: array
-          description: Array of email objects matching the query.
-          items:
-            $ref: '#/components/schemas/Email'
-  examples:
-    EmailListSuccess:
-      summary: Successful email retrieval
-      value:
-        result: success
-        message: null
-        count: 2
-        limit: 10
-        offset: 0
-        emails:
-        - from: sender@example.com
-          to: mynamespace.verify-user123@inbox.testmail.app
-          subject: Please verify your email address
-          text: Click here to verify your account.
-          html: <p>Click <a href="https://example.com/verify/abc123">here</a> to verify.</p>
-          tag: verify-user123
-          timestamp: 1686000000000
-        - from: no-reply@service.com
-          to: mynamespace.reset-user456@inbox.testmail.app
-          subject: Password reset request
-          text: Use this link to reset your password.
-          html: <p>Reset your <a href="https://example.com/reset/xyz789">password</a>.</p>
-          tag: reset-user456
-          timestamp: 1686001000000
-    EmailListEmpty:
-      summary: Empty inbox response
-      value:
-        result: success
-        message: null
-        count: 0
-        limit: 10
-        offset: 0
-        emails: []
   securitySchemes:
     ApiKeyQuery:
       type: apiKey
