@@ -149,15 +149,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   examples:
-    EmailListEmpty:
-      summary: Empty inbox response
-      value:
-        result: success
-        message: null
-        count: 0
-        limit: 10
-        offset: 0
-        emails: []
     EmailListSuccess:
       summary: Successful email retrieval
       value:
@@ -181,23 +172,16 @@ components:
           html: <p>Reset your <a href="https://example.com/reset/xyz789">password</a>.</p>
           tag: reset-user456
           timestamp: 1686001000000
+    EmailListEmpty:
+      summary: Empty inbox response
+      value:
+        result: success
+        message: null
+        count: 0
+        limit: 10
+        offset: 0
+        emails: []
   schemas:
-    ErrorResponse:
-      type: object
-      description: Error response envelope.
-      required:
-      - result
-      properties:
-        result:
-          type: string
-          enum:
-          - fail
-          description: Always "fail" for error responses.
-          example: fail
-        message:
-          type: string
-          description: Human-readable error description.
-          example: 'Missing required parameter: namespace'
     EmailListResponse:
       type: object
       description: Response envelope for a list of emails.
@@ -238,6 +222,22 @@ components:
           description: Array of email objects matching the query.
           items:
             $ref: '#/components/schemas/Email'
+    ErrorResponse:
+      type: object
+      description: Error response envelope.
+      required:
+      - result
+      properties:
+        result:
+          type: string
+          enum:
+          - fail
+          description: Always "fail" for error responses.
+          example: fail
+        message:
+          type: string
+          description: Human-readable error description.
+          example: 'Missing required parameter: namespace'
     EmailHeader:
       type: object
       description: A single raw email header line.
